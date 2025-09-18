@@ -1,0 +1,8 @@
+import React from 'react';
+import AurejIALandingPage from './components/AurejIALandingPage';
+
+function App() {
+  return <AurejIALandingPage />;
+}
+
+export default App;
