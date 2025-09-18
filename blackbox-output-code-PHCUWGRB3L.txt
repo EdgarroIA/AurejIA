@@ -1,0 +1,383 @@
+const fs = require('fs');
+const path = require('path');
+const { exec } = require('child_process');
+
+const projectName = 'aurej-ia-landing';
+
+const files = {
+  'package.json': `{
+  "name": "aurej-ia-landing",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "framer-motion": "^10.12.16",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-scroll": "^1.8.9"
+  },
+  "devDependencies": {
+    "@types/react": "^18.0.28",
+    "@types/react-dom": "^18.0.11",
+    "autoprefixer": "^10.4.14",
+    "postcss": "^8.4.24",
+    "tailwindcss": "^3.3.2",
+    "typescript": "^5.0.4",
+    "vite": "^4.3.9"
+  }
+}
+`,
+  'vite.config.ts': `import { defineConfig } from 'vite';
+import react from '@vitejs/plugin-react';
+
+export default defineConfig({
+  plugins: [react()],
+});
+`,
+  'tsconfig.json': `{
+  "compilerOptions": {
+    "target": "ESNext",
+    "useDefineForClassFields": true,
+    "lib": ["DOM", "DOM.Iterable", "ESNext"],
+    "allowJs": false,
+    "skipLibCheck": true,
+    "esModuleInterop": false,
+    "allowSyntheticDefaultImports": true,
+    "strict": true,
+    "forceConsistentCasingInFileNames": true,
+    "module": "ESNext",
+    "moduleResolution": "Node",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "noEmit": true,
+    "jsx": "react-jsx"
+  },
+  "include": ["src"]
+}
+`,
+  'postcss.config.js': `module.exports = {
+  plugins: {
+    tailwindcss: {},
+    autoprefixer: {},
+  },
+};
+`,
+  'tailwind.config.js': `/** @type {import('tailwindcss').Config} */
+module.exports = {
+  content: [
+    "./index.html",
+    "./src/**/*.{ts,tsx}",
+  ],
+  theme: {
+    extend: {},
+  },
+  plugins: [],
+};
+`,
+  'public/index.html': `<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Aurej IA - Landing Page</title>
+    <link rel="icon" href="/favicon.ico" />
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
+`,
+  'public/favicon.ico': '', // Puedes agregar un favicon real si quieres
+  'src/index.css': `@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Puedes agregar estilos globales aquí */
+`,
+  'src/main.tsx': `import React from 'react';
+import ReactDOM from 'react-dom/client';
+import './index.css';
+import App from './App';
+
+ReactDOM.createRoot(document.getElementById('root')!).render(
+  <React.StrictMode>
+    <App />
+  </React.StrictMode>
+);
+`,
+  'src/App.tsx': `import React from 'react';
+import AurejIALandingPage from './components/AurejIALandingPage';
+
+function App() {
+  return <AurejIALandingPage />;
+}
+
+export default App;
+`,
+  'src/components/AurejIALandingPage.tsx': `import React from 'react';
+import { motion } from 'framer-motion';
+import { Link, animateScroll as scroll } from 'react-scroll';
+
+const AurejIALandingPage = () => {
+  const scrollToTop = () => {
+    scroll.scrollToTop({ smooth: true, duration: 600 });
+  };
+
+  return (
+    <div className="min-h-screen bg-gradient-to-b from-black via-gray-900 to-gray-800 text-gray-300">
+      {/* Header */}
+      <header className="bg-black bg-opacity-95 border-b border-gray-700 sticky top-0 z-50">
+        <div className="container mx-auto px-4 py-4 flex justify-between items-center">
+          <div className="flex items-center space-x-2 cursor-pointer" onClick={scrollToTop}>
+            <div className="w-8 h-8 bg-gray-800 rounded-lg flex items-center justify-center shadow-md">
+              <span className="text-white font-bold text-lg">AI</span>
+            </div>
+            <h1 className="text-xl font-bold text-gray-400">Aurej IA</h1>
+          </div>
+          
+          <nav className="hidden md:flex space-x-8">
+            <Link to="models" smooth={true} duration={600} className="cursor-pointer text-gray-400 hover:text-gray-200 transition-colors">Modelos</Link>
+            <Link to="services" smooth={true} duration={600} className="cursor-pointer text-gray-400 hover:text-gray-200 transition-colors">Servicios</Link>
+            <Link to="pricing" smooth={true} duration={600} className="cursor-pointer text-gray-400 hover:text-gray-200 transition-colors">Precios</Link>
+            <Link to="contact" smooth={true} duration={600} className="cursor-pointer text-gray-400 hover:text-gray-200 transition-colors">Contacto</Link>
+          </nav>
+          
+          <button onClick={scrollToTop} className="bg-gray-800 hover:bg-gray-700 text-white px-6 py-2 rounded-lg shadow-md transition-colors">
+            Comenzar
+          </button>
+        </div>
+      </header>
+
+      {/* Hero Section */}
+      <section className="bg-gray-900 bg-opacity-90 py-20">
+        <div className="container mx-auto px-4 text-center max-w-4xl">
+          <motion.h1 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="text-4xl md:text-6xl font-extrabold mb-6 tracking-wide text-gray-100"
+          >
+            Potencia tu Negocio con Inteligencia Artificial
+          </motion.h1>
+          <motion.p 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.1 }}
+            className="text-xl text-gray-400 mb-8"
+          >
+            Modelos de IA de vanguardia y desarrollo web profesional para llevar tu empresa al siguiente nivel
+          </motion.p>
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2 }}
+            className="flex flex-col sm:flex-row gap-4 justify-center"
+          >
+            <Link to="models" smooth={true} duration={600}>
+              <button className="bg-gray-800 text-white px-8 py-3 rounded-lg shadow hover:bg-gray-700 transition-colors">
+                Ver Modelos
+              </button>
+            </Link>
+            <Link to="services" smooth={true} duration={600}>
+              <button className="border border-gray-700 text-gray-400 px-8 py-3 rounded-lg hover:bg-gray-700 hover:text-white transition-colors">
+                Saber Más
+              </button>
+            </Link>
+          </motion.div>
+          {/* Imagen hero */}
+          <motion.img
+            src="https://images.unsplash.com/photo-1518773553398-650c184e0bb3?auto=format&fit=crop&w=1200&q=80"
+            alt="Inteligencia Artificial"
+            className="mx-auto mt-12 rounded-lg shadow-lg max-w-full h-auto"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.3 }}
+          />
+        </div>
+      </section>
+
+      {/* Features Section */}
+      <section className="py-20 bg-black bg-opacity-95">
+        <div className="container mx-auto px-4">
+          <h2 className="text-3xl font-bold text-center mb-16 text-gray-300">¿Por qué elegirnos?</h2>
+          <div className="grid md:grid-cols-3 gap-8">
+            <motion.div 
+              whileHover={{ y: -5 }}
+              className="bg-gray-900 bg-opacity-90 p-6 rounded-lg text-center shadow-lg"
+            >
+              <div className="w-16 h-16 bg-gray-800 rounded-full flex items-center justify-center mx-auto mb-4 shadow">
+                <span className="text-3xl">🤖</span>
+              </div>
+              <h3 className="text-xl font-semibold mb-3 text-gray-200">IA de Última Generación</h3>
+              <p className="text-gray-400">Modelos entrenados con los últimos avances en machine learning y deep learning</p>
+              <img
+                src="https://images.unsplash.com/photo-1537432376769-00a1f7a7a7a7?auto=format&fit=crop&w=400&q=80"
+                alt="IA avanzada"
+                className="mt-4 rounded-md mx-auto"
+              />
+            </motion.div>
+
+            <motion.div 
+              whileHover={{ y: -5 }}
+              className="bg-gray-900 bg-opacity-90 p-6 rounded-lg text-center shadow-lg"
+            >
+              <div className="w-16 h-16 bg-gray-800 rounded-full flex items-center justify-center mx-auto mb-4 shadow">
+                <span className="text-3xl">💻</span>
+              </div>
+              <h3 className="text-xl font-semibold mb-3 text-gray-200">Desarrollo Profesional</h3>
+              <p className="text-gray-400">Aplicaciones y websites con las mejores prácticas y tecnologías modernas</p>
+              <img
+                src="https://images.unsplash.com/photo-1504384308090-c894fdcc538d?auto=format&fit=crop&w=400&q=80"
+                alt="Desarrollo web"
+                className="mt-4 rounded-md mx-auto"
+              />
+            </motion.div>
+
+            <motion.div 
+              whileHover={{ y: -5 }}
+              className="bg-gray-900 bg-opacity-90 p-6 rounded-lg text-center shadow-lg"
+            >
+              <div className="w-16 h-16 bg-gray-800 rounded-full flex items-center justify-center mx-auto mb-4 shadow">
+                <span className="text-3xl">⚡</span>
+              </div>
+              <h3 className="text-xl font-semibold mb-3 text-gray-200">Rápido y Escalable</h3>
+              <p className="text-gray-400">Soluciones optimizadas para alto rendimiento y crecimiento futuro</p>
+              <img
+                src="https://images.unsplash.com/photo-1498050108023-c5249f4df085?auto=format&fit=crop&w=400&q=80"
+                alt="Escalabilidad"
+                className="mt-4 rounded-md mx-auto"
+              />
+            </motion.div>
+          </div>
+        </div>
+      </section>
+
+      {/* AI Models Section */}
+      <section id="models" className="py-20 bg-gradient-to-b from-gray-900 to-black">
+        <div className="container mx-auto px-4">
+          <h2 className="text-3xl font-bold text-center mb-16 text-gray-300">Nuestros Modelos de IA</h2>
+          
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {/* Model Card 1 */}
+            <motion.div 
+              whileHover={{ y: -5 }}
+              className="bg-gray-800 rounded-lg overflow-hidden shadow-lg"
+            >
+              <img 
+                src="https://images.unsplash.com/photo-1504384308090-c894fdcc538d?auto=format&fit=crop&w=400&q=80" 
+                alt="Modelo IA para E-commerce" 
+                className="w-full h-48 object-cover"
+              />
+              <div className="p-6">
+                <h3 className="text-xl font-semibold mb-2 text-gray-100">IA para E-commerce</h3>
+                <p className="text-gray-400 mb-4">Recomendaciones personalizadas y predicción de ventas</p>
+                <div className="flex justify-between items-center">
+                  <span className="text-2xl font-bold text-gray-400">$299</span>
+                  <button className="bg-gray-700 text-white px-4 py-2 rounded hover:bg-gray-600 transition-colors">
+                    Comprar
+                  </button>
+                </div>
+              </div>
+            </motion.div>
+
+            {/* Model Card 2 */}
+            <motion.div 
+              whileHover={{ y: -5 }}
+              className="bg-gray-800 rounded-lg overflow-hidden shadow-lg"
+            >
+              <img 
+                src="https://images.unsplash.com/photo-1519389950473-47ba0277781c?auto=format&fit=crop&w=400&q=80" 
+                alt="Chatbot Avanzado" 
+                className="w-full h-48 object-cover"
+              />
+              <div className="p-6">
+                <h3 className="text-xl font-semibold mb-2 text-gray-100">Chatbot Avanzado</h3>
+                <p className="text-gray-400 mb-4">Atención al cliente automatizada con NLP</p>
+                <div className="flex justify-between items-center">
+                  <span className="text-2xl font-bold text-gray-400">$199</span>
+                  <button className="bg-gray-700 text-white px-4 py-2 rounded hover:bg-gray-600 transition-colors">
+                    Comprar
+                  </button>
+                </div>
+              </div>
+            </motion.div>
+
+            {/* Model Card 3 */}
+            <motion.div 
+              whileHover={{ y: -5 }}
+              className="bg-gray-800 rounded-lg overflow-hidden shadow-lg"
+            >
+              <img 
+                src="https://images.unsplash.com/photo-1526378723032-3a1a1a1a1a1a?auto=format&fit=crop&w=400&q=80" 
+                alt="Análisis predictivo" 
+                className="w-full h-48 object-cover"
+              />
+              <div className="p-6">
+                <h3 className="text-xl font-semibold mb-2 text-gray-100">Análisis Predictivo</h3>
+                <p className="text-gray-400 mb-4">Predicción de tendencias y comportamiento del mercado</p>
+                <div className="flex justify-between items-center">
+                  <span className="text-2xl font-bold text-gray-400">$349</span>
+                  <button className="bg-gray-700 text-white px-4 py-2 rounded hover:bg-gray-600 transition-colors">
+                    Comprar
+                  </button>
+                </div>
+              </div>
+            </motion.div>
+
+            {/* Model Card 4 */}
+            <motion.div 
+              whileHover={{ y: -5 }}
+              className="bg-gray-800 rounded-lg overflow-hidden shadow-lg"
+            >
+              <img 
+                src="https://images.unsplash.com/photo-1515377905703-c4788e51af15?auto=format&fit=crop&w=400&q=80" 
+                alt="Reconocimiento de imágenes" 
+                className="w-full h-48 object-cover"
+              />
+              <div className="p-6">
+                <h3 className="text-xl font-semibold mb-2 text-gray-100">Reconocimiento de Imágenes</h3>
+                <p className="text-gray-400 mb-4">Identificación y clasificación automática de imágenes</p>
+                <div className="flex justify-between items-center">
+                  <span className="text-2xl font-bold text-gray-400">$279</span>
+                  <button className="bg-gray-700 text-white px-4 py-2 rounded hover:bg-gray-600 transition-colors">
+                    Comprar
+                  </button>
+                </div>
+              </div>
+            </motion.div>
+
+            {/* Model Card 5 */}
+            <motion.div 
+              whileHover={{ y: -5 }}
+              className="bg-gray-800 rounded-lg overflow-hidden shadow-lg"
+            >
+              <img 
+                src="https://images.unsplash.com/photo-1504384308090-c894fdcc538d?auto=format&fit=crop&w=400&q=80" 
+                alt="Procesamiento de lenguaje natural" 
+                className="w-full h-48 object-cover"
+              />
+              <div className="p-6">
+                <h3 className="text-xl font-semibold mb-2 text-gray-100">Procesamiento de Lenguaje Natural</h3>
+                <p className="text-gray-400 mb-4">Análisis y generación de texto automatizado</p>
+                <div className="flex justify-between items-center">
+                  <span className="text-2xl font-bold text-gray-400">$319</span>
+                  <button className="bg-gray-700 text-white px-4 py-2 rounded hover:bg-gray-600 transition-colors">
+                    Comprar
+                  </button>
+                </div>
+              </div>
+            </motion.div>
+
+            {/* Model Card 6 */}
+            <motion.div 
+              whileHover={{ y: -5 }}
+              className="bg-gray-800 rounded-lg overflow-hidden shadow-lg"
+            >
+              <img 
+                src="https://images.unsplash.com/photo-1498050108023-c5249f4df085?auto=format&fit=crop&w=400&q=80" 
+                alt="Automatización de procesos" 
+                className="
